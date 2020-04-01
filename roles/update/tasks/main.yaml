@@ -1,0 +1,10 @@
+---
+- name: Check packages for updates
+  shell: "pacman -Qu | wc -l"
+  register: updates
+  become: True
+
+- name: Update packages
+  shell: "pacman -Syu"
+  when: updates.stdout|int > 0
+  become: True

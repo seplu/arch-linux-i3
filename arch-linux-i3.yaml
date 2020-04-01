@@ -1,0 +1,18 @@
+---
+- hosts: all
+  strategy: free
+  gather_facts: no
+
+  environment:
+    PATH: "/usr/local/bin:{{ (ansible_env | default({})).PATH | default('/usr/bin:/bin:/usr/sbin:/sbin') }}"
+  
+  pre_tasks:
+    - name: "Remove pacman-key"
+      raw: sudo rm -rf /etc/pacman.d/gnupg
+    - name: "Pacman Key Init"
+      raw: sudo pacman-key --init && sudo pacman-key --populate archlinux
+    - name: "Install Python3"
+      raw: sudo pacman -S python3 --noconfirm
+
+  roles:
+    - { role: update, tags: [ 'update' ] }
