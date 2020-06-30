@@ -1,0 +1,21 @@
+- name: Set fact for bookmarks
+  set_fact:
+    bookmarks: False
+  when: buku_bookmarks is not defined
+
+- block:
+  - name: Run buku to create empty database
+    shell: buku -p
+    become: True
+    become_user: "{{ username }}"
+
+  - name: Save new database to temporary directory
+    copy:
+      content: "{{ buku_bookmarks }}"
+      dest: /tmp/bookmarks.md
+  
+  - name: Import new database to Buku
+    shell: buku --tacit -i /tmp/bookmarks.md
+    become: True
+    become_user: "{{ username }}"
+  when: bookmarks|bool != False

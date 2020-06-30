@@ -1,0 +1,18 @@
+- block:
+  - name: Create dunst directory
+    file:
+      path: "~/.config/dunst"
+      state: directory
+      mode: 0755
+      owner: "{{ username }}"
+      group: "{{ username }}"
+
+  - name: Copy default config
+    copy:
+      src: dunstrc
+      dest: "~/.config/dunst/dunstrc"
+      mode: 0644
+      owner: "{{ username }}"
+      group: "{{ username }}"
+  become: True
+  become_user: "{{ username }}"

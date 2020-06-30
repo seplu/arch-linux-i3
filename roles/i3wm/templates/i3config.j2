@@ -1,0 +1,194 @@
+# i3 Config Theme
+#
+#
+
+# Font for windows titles and bar
+font sans 8
+
+# Set MASTER key ( WIN key )
+set $mod Mod4
+
+# Backlight ( for ASUS RoG GL502VMK )
+# exec /home/{{ username }}/.scripts/kdbacklight up
+
+# Network Applet
+exec --no-startup-id nm-applet
+
+# Notification
+exec --no-startup-id dunst
+
+# Wallpaper
+exec --no-startup-id feh --bg-scale /home/{{ username }}/Images/Wallpapers/arch_linux.png
+
+# Xcompmgr for Alpha
+exec --no-startup-id xcompmgr
+
+# Unclutter for hiding cursor on idle
+exec --no-startup-id unclutter
+
+# modprobe for ifuse
+exec --no-startup-id modprobe fuse
+
+# Polybar
+exec_always --no-startup-id "sleep 3; bash $HOME/.config/polybar/launch.sh"
+
+# Define names for workspaces
+set $ws1 "1: {{ ansible_hostname }}"
+set $ws2 "2: Code"
+set $ws3 "3: Internet"
+set $ws4 "4: Storage"
+set $ws5 "5: Media"
+set $ws6 "6: Chat"
+set $ws7 "7: Work"
+set $ws8 "8: Work-Chat"
+set $ws9 "9: Other"
+
+# Start a Terminal
+bindsym $mod+Return workspace $ws1; exec --no-startup-id urxvt
+
+# Start a program launcher
+bindsym $mod+d exec --no-startup-id i3-dmenu-desktop --dmenu="dmenu -i -fn 'Source Sans Pro-10' -nb '#212121' -sb '#2b83a6' -sf '#ffffff'"
+
+# Kill focused window
+bindsym $mod+q kill
+
+# Change focus
+bindsym $mod+$left focus left
+bindsym $mod+$down focus down
+bindsym $mod+$up focus up
+bindsym $mod+$right focus right
+
+bindsym $mod+Left focus left
+bindsym $mod+Down focus down
+bindsym $mod+Up focus up
+bindsym $mod+Right focus right
+
+# Move focued window
+bindsym $mod+Shift+$left move left
+bindsym $mod+Shift+$down move down
+bindsym $mod+Shift+$up move up
+bindsym $mod+Shift+$right move right
+
+bindsym $mod+Shift+Left move left
+bindsym $mod+Shift+Up move up
+bindsym $mod+Shift+Down move down
+bindsym $mod+Shift+Right move right
+
+# Split in horizontal orientation
+bindsym $mod+h split h
+
+# Split in vertical orientation
+bindsym $mod+v split v
+
+# Enter Fullscreen mode for the focused window
+bindsym $mod+f fullscreen toggle
+
+# Toggle floating / tilling
+bindsym $mod+Shift+space floating toggle
+
+# Change window borders
+bindsym $mod+t border normal 0
+bindsym $mod+y border pixel 1
+bindsym $mod+u border none
+
+# Workspace Switch
+bindsym $mod+1 workspace $ws1
+bindsym $mod+2 workspace $ws2
+bindsym $mod+3 workspace $ws3
+bindsym $mod+4 workspace $ws4
+bindsym $mod+5 workspace $ws5
+bindsym $mod+6 workspace $ws6
+bindsym $mod+7 workspace $ws7
+bindsym $mod+8 workspace $ws8
+bindsym $mod+9 workspace $ws9
+
+# Move focued container to workspace
+bindsym $mod+Shift+1 move container to workspace $ws1
+bindsym $mod+Shift+2 move container to workspace $ws2
+bindsym $mod+Shift+3 move container to workspace $ws3
+bindsym $mod+Shift+4 move container to workspace $ws4
+bindsym $mod+Shift+5 move container to workspace $ws5
+bindsym $mod+Shift+6 move container to workspace $ws6
+bindsym $mod+Shift+7 move container to workspace $ws7
+bindsym $mod+Shift+8 move container to workspace $ws8
+bindsym $mod+Shift+9 move container to workspace $ws9
+
+# Application shortcuts
+#bindsym $mod+F1
+bindsym $mod+F2 workspace $ws2; exec code
+bindsym $mod+F3 workspace $ws3; exec opera
+bindsym $mod+F4 workspace $ws4; exec nemo
+bindsym $mod+F5 workspace $ws5; exec vlc
+bindsym $mod+F6 workspace $ws6; exec discord
+bindsym $mod+F7 workspace $ws7; exec firefox
+bindsym $mod+F8 workspace $ws8; exec slack
+
+# Assign program to workspace
+assign [class="urxvt"] $ws1
+assign [class="code"] $ws2
+assign [class="opera"] $ws3
+assign [class="Nemo"] $ws4
+assign [class="vlc"] $ws5
+assign [class="discord"] $ws6
+assign [class="firefox"] $ws7
+assign [class="Slack"] $ws8
+assign [class="virtualbox"] $ws9
+
+# Volume control
+bindsym XF86AudioLowerVolume exec --no-startup-id amixer -q -D pulse sset Master 5%- unmute
+bindsym XF86AudioRaiseVolume exec --no-startup-id amixer -q -D pulse sset Master 5%+ unmute
+bindsym XF86AudioMute exec --no-startup-id amixer -q -D pulse sset Master toggle
+
+# Brightness control
+bindsym XF86MonBrightnessUp exec --no-startup-id light -A 5
+bindsym XF86MonBrightnessDown exec --no-startup-id light -U 5
+
+# Keyboard backlight control ( for ASUS RoG GL502VMK )
+bindsym XF86KbdBrightnessUp exec --no-startup-id /home/{{ username }}/.scripts/kbdbacklight up
+bindsym XF86KbdBrightnessDown exec --no-startup-id /home/{{ username }}/.scripts/kbdbacklight down
+
+# Reload the configuration
+bindsym $mod+Shift+c reload
+
+# Restart i3 inplace
+bindsym $mod+Shift+r restart
+
+# Lock computer
+bindsym $mod+x exec --no-startup-id i3lock --color=#000000
+
+# Resize window
+bindsym $mod+r mode " ReSizE "
+mode " ReSizE " {
+ bindsym $left resize shrink width 10 px or 10 ppt
+ bindsym $down resize grow height 10 px or 10 ppt
+ bindsym $up resize shrink height 10 px or 10 ppt
+ bindsym $right resize grow width 10 px or 10 ppt
+
+ bindsym Left resize shrink width 10 px or 10 ppt
+ bindsym Down resize grow height 10 px or 10 ppt
+ bindsym Up resize shrink height 10 px or 10 ppt
+ bindsym Right resize grow width 10 px or 10 ppt
+}
+
+# Set specific windows to floating mode
+for_window [window_role="app"] floating enable
+for_window [window_role="pop-up"] floating enable
+for_window [window_role="task_dialog"] floating enable
+for_window [window_role="Preferences"] floating enable
+
+# Styling
+# border / background / text / indicate / child border
+client.focused #2b83a6 #2b83a6 #ffffff #dddddd #2b83a6
+client.focused_inactive #212121 #212121 #86888c #292d2e #5a5a5a
+client.unfocused #212121 #212121 #86888c #292d2e #5a5a5a
+client.urgent #d64e4e #d64e4e #ffffff #d64e4e #d64e4e
+client.placeholder #212121 #0c0c0c #ffffff #212121 #262626
+client.background #212121
+
+# Borders
+for_window [class="^.*"] border pixel 1
+gaps inner 3 # for 'i3-gaps' package
+gaps outer 2 # for 'i3-gaps' package
+
+# Maximum floating window
+floating_maximum_size 1350 x 750

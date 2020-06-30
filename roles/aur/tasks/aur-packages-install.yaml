@@ -1,0 +1,32 @@
+- block:
+  - name: "Download {{ item }} from AUR"
+    get_url:
+      url: "{{ aur_url }}/{{ item }}.tar.gz"
+      dest: "/tmp/{{ item }}.tar.gz"
+
+  - name: "Check if {{ item }} already installed"
+    shell: cat ~/.aur/{{ item }}.shasum
+    ignore_errors: True
+    register: aur_package_shasum_local
+
+  - name: "Calculate shasum for {{ item }}"
+    shell: "/usr/bin/core_perl/shasum -a 256 /tmp/{{ item }}.tar.gz | awk '{print $1;}'"
+    register: aur_package_shasum
+
+  - name: "Unpack {{ item }} package"
+    unarchive:
+      src: "/tmp/{{ item }}.tar.gz"
+      dest: /tmp
+      remote_src: yes
+    when: (aur_package_shasum.stdout != aur_package_shasum_local.stdout)
+
+  - name: "Install {{ item }} package"
+    shell: "cd /tmp/{{ item }}/ && makepkg -sri --noconfirm --needed"
+    when: (aur_package_shasum.stdout != aur_package_shasum_local.stdout)
+    retries: 2
+    delay: 5
+
+  - name: "Create shasum after installation for {{ item }}"
+    shell: "/usr/bin/core_perl/shasum -a 256 /tmp/{{ item }}.tar.gz | awk '{print $1;}' > ~/.aur/{{ item }}.shasum"
+  become: True
+  become_user: "{{ username }}"

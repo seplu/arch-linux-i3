@@ -12,7 +12,40 @@
     - name: "Pacman Key Init"
       raw: sudo pacman-key --init && sudo pacman-key --populate archlinux
     - name: "Install Python3"
-      raw: sudo pacman -S python3 --noconfirm
+      raw: sudo pacman -S python3 --noconfirm --needed
+
+    - include_vars: ../custom-config/user.yaml
+      ignore_errors: True
+      no_log: True
+    - name: Set default username
+      set_fact:
+        username: arch
+      when: ( username is not defined ) and ( username | length < 1 )
+    - include_vars: ../custom-config/bookmarks.yaml
+      ignore_errors: True
+
+  vars:
+    aur_packages: ['buku-git','ifuse','networkmanager-dmenu-git','qimgv-git','qnapi','pavolume-git','realvnc-vnc-viewer','winbox']
+    aur_url: "https://aur.archlinux.org/cgit/aur.git/snapshot"
+    deps_base: ['base-devel','cronie','gcc','git','htop','mc','neofetch','openssh','tree','wget','vim','zsh']
+    deps_i3: ['alsa-utils','arc-gtk-theme','breeze-icons','dmenu','dunst','feh','libva-intel-driver','light','nemo','network-manager-applet','networkmanager-openvpn','perl','pulseaudio','pulseaudio-alsa','rxvt-unicode','ttf-dejavu','ttf-hack','unclutter','upower','xclip','xcompmgr','xf86-video-intel']
+    software_internet: ['youtube-dl']
+    software_iphone_ipad: ['libimobiledevice']
+    software_productivity: ['calc','dbeaver','nemo-fileroller','rsync','task','texlive-most']
+    software_programming: ['code','nodejs','npm']
+    software_social_media: ['discord']
+    software_system: ['dosfstools','dunst','exfat-utils','libnotify','notification-daemon','pv','usbutils','vnstat','xfsprogs']
+    software_virtualization: ['mesa','vagrant','virtualbox','virtualbox-host-modules-arch','wine','xf86-video-vesa','xorg']
 
   roles:
-    - { role: update, tags: [ 'update' ] }
+    - { role: dependencies, tags: [ 'dependencies' ]}
+    - { role: xorg, tags: [ 'xorg' ]}
+    - { role: user, tags: [ 'user' ]}
+    - { role: scripts, tags: [ 'scripts' ]}
+    - { role: i3wm, tags: [ 'i3wm' ]}
+    - { role: polybar, tags: [ 'polybar' ]}
+    - { role: aur, tags: [ 'aur' ]}
+    - { role: software, tags: [ 'software' ]}
+    - { role: bookmarks, tags: [ 'bookmarks' ]}
+    - { role: update, tags: [ 'update' ]}
+    - { role: cleanup, tags: [ 'cleanup' ]}

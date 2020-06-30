@@ -1,0 +1,87 @@
+- block:
+  - name: Install dependencies for i3
+    pacman:
+      name: "{{ deps_i3 }}"
+      extra_args: --noconfirm --needed
+  
+  - name: Install i3 window manager
+    pacman:
+      name:
+        - i3-gaps
+        - i3blocks
+        - i3lock
+        - i3status
+      extra_args: --noconfirm --needed
+  
+  - name: Check installed graphic card
+    shell: lspci | grep VGA
+    register: lspci_vga
+  
+  - name: Fix screen tearing for intel
+    copy:
+      src: 20-intel.conf
+      dest: "/etc/X11/xorg.conf.d/20-intel.conf"
+      mode: 0755
+      owner: root
+      group: root
+    when: '"Intel" in lspci_vga.stdout' 
+  become: True
+
+- block:
+  - name: Exec i3
+    blockinfile:
+      path: "~/.xinitrc"
+      create: yes
+      block: |
+        #!/bin/sh
+        xrdb ~/.Xresources
+        exec i3
+  
+  - name: Create directories
+    file:
+      path: "{{ item }}"
+      state: directory
+      mode: 0755
+      owner: "{{ username }}"
+      group: "{{ username }}"
+    with_items:
+      - "~/.config/i3"
+      - "~/.config/gtk-3.0"
+      - "~/Images"
+      - "~/Images/Wallpapers"
+
+  - name: Copy template config
+    template:
+      src: i3config.j2
+      dest: "~/.config/i3/config"
+      mode: 0644
+      owner: "{{ username }}"
+      group: "{{ username }}"
+  
+  - name: Copy Xresources config
+    copy:
+      src: Xresources
+      dest: "~/.Xresources"
+      mode: 0644
+      owner: "{{ username }}"
+      group: "{{ username }}"
+
+  - name: Copy Gtk3 config
+    copy:
+      src: gtk3settings
+      dest: "~/.config/gtk-3.0/settings.ini"
+      mode: 0644
+      owner: "{{ username }}"
+      group: "{{ username }}"
+
+  - name: Copy wallpaper to directory
+    copy:
+      src: "{{ item }}"
+      dest: "/home/{{ username }}/Images/Wallpapers/{{ item }}"
+      mode: 0644
+      owner: "{{ username }}"
+      group: "{{ username }}"
+    with_items:
+      - arch_linux.png
+  become: True
+  become_user: "{{ username }}"

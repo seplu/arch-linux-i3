@@ -1,0 +1,30 @@
+- block:
+  - name: Install internet software
+    pacman:
+      name: "{{ software_internet }}"
+      extra_args: --noconfirm --needed
+
+  - name: Install productivity software
+    pacman:
+      name: "{{ software_productivity }}"
+      extra_args: --noconfirm --needed
+
+  - name: Install programming software
+    pacman:
+      name: "{{ software_programming }}"
+      extra_args: --noconfirm --needed
+
+  - name: Install social-media software
+    pacman:
+      name: "{{ software_social_media }}"
+      extra_args: --noconfirm --needed
+
+  - name: Install system software
+    pacman:
+      name: "{{ software_system }}"
+      extra_args: --noconfirm --needed
+  become: True
+
+- include: iphone-ipad.yaml
+- include: notification-daemon.yaml
+- include: virtualization.yaml

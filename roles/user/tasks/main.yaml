@@ -1,0 +1,127 @@
+- name: Set fact for ssh key
+  set_fact:
+    generate_ssh: False
+  when: ( ssh_key_priv is defined ) and ( ssh_key_priv | length > 0 )
+
+- name: Create user
+  user:
+    name: "{{ username }}"
+    password: "{{ password | default('$1$SomeSalt$C7s11A7tyf8OKOg0JoCYp/') }}"
+    create_home: True
+    shell: /bin/zsh
+    groups: "adm,audio,disk,input,storage,video,wheel"
+    append: True
+    generate_ssh_key: "{{ generate_ssh | default(True) }}"
+    ssh_key_bits: 4096
+    ssh_key_file: ".ssh/{{ ssh_key_name | default('id_rsa') }}"
+    update_password: on_create
+  become: True
+
+- block:
+  - name: Create ssh directory
+    file:
+      path: "~/.ssh"
+      state: directory
+      mode: 0700
+      owner: "{{ username }}"
+      group: "{{ username }}"
+
+  - name: Create private_key file
+    copy:
+      content: "{{ ssh_key_priv }}"
+      dest: "~/.ssh/{{ ssh_key_name | default('id_rsa') }}"
+
+  - name: Create public_hey file
+    copy:
+      content: "{{ ssh_key_pub }}"
+      dest: "~/.ssh/{{ ssh_key_name | default('id_rsa') }}.pub"
+  when: ( ssh_key_priv is defined ) and ( ssh_key_priv | length > 0) and ( ssh_key_pub is defined ) and ( ssh_key_pub | length > 0 )
+  become: True
+  become_user: "{{ username }}"
+
+- name: Create gitconfig file
+  copy:
+    content: "{{ gitconfig }}"
+    dest: "~/.gitconfig"
+  when: ( gitconfig is defined ) and ( gitconfig | length > 0 )
+  become: True
+  become_user: "{{ username }}"
+
+- block:
+  - name: Clone repository Oh-My_Zsh
+    git:
+      repo: https://github.com/robbyrussell/oh-my-zsh
+      dest: "~/.oh-my-zsh"
+    register: cloning
+  
+  - name: Create new zshrc
+    copy:
+      src: "~/.oh-my-zsh/templates/zshrc.zsh-template"
+      dest: "~/.zshrc"
+      owner: "{{ username }}"
+      group: "{{ username }}"
+    when: cloning is success
+  
+  - name: Update zshrc
+    blockinfile:
+      path: "~/.zshrc"
+      insertafter: EOF
+      block: |
+        if [[ "$(tty)" == /dev/tty1 ]]; then
+        startx
+        fi
+        path+=('/home/{{ username }}/.scripts')
+        autoload -Uz compinit
+        compinit
+  
+  - name: Create vimrc
+    blockinfile:
+      path: "~/.vimrc"
+      marker: "\" {mark} ANSIBLE MANAGED BLOCK"
+      create: yes
+      block: |
+        syntax on
+  
+  - name: Create .config directory
+    file:
+      path: "~/.config"
+      state: directory
+      mode: 0755
+      owner: "{{ username }}"
+      group: "{{ username }}"
+  
+  - name: Create htop directory
+    file:
+      path: "~/.config/htop"
+      state: directory
+      mode: 0755
+      owner: "{{ username }}"
+      group: "{{ username }}"
+
+  - name: Copy htop config file
+    copy:
+      src: htoprc
+      dest: "~/.config/htop/htoprc"
+      mode: 0755
+      owner: "{{ username }}"
+      group: "{{ username }}"  
+  become: True
+  become_user: "{{ username }}"
+
+- name: Add user to sudo
+  lineinfile:
+    path: "/etc/sudoers.d/{{ username }}"
+    line: '{{ username }} ALL=(ALL) ALL'
+    state: present
+    mode: 0440
+    create: yes
+    validate: "visudo -cf %s"
+  become: True
+
+- name: Rise user priviledges for provision
+  blockinfile:
+    path: "/etc/sudoers"
+    insertafter: EOF
+    block: |
+      %wheel ALL=(ALL) NOPASSWD: ALL
+  become: True

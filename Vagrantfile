@@ -17,10 +17,11 @@ Vagrant.configure("2") do |config|
         end
 
         arch.vm.provider "virtualbox" do |virtualbox|
-            virtualbox.gui = "true"
+            #virtualbox.gui = "true"
             virtualbox.name = "vbox-arch-linux-i3"
             virtualbox.cpus = 2
             virtualbox.memory = 2048
+            virtualbox.customize ['setextradata', :id, 'GUI/LastGuestSizeHint','1280,800']
         end
     end
 end

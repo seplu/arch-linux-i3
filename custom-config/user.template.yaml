@@ -1,0 +1,14 @@
+username: <username>
+password: <hashed password> # python -> import crypt; print(crypt.crypt("Passw0rd","$1$SomeSalt$"))
+ssh_key_name: <ssh_key_filename>
+ssh_key_priv: |
+  -----BEGIN RSA PRIVATE KEY-----
+  [...]
+  -----END RSA PRIVATE KEY-----
+ssh_key_pub: |
+  -----BEGIN PUBLIC KEY-----
+  [...]
+  -----END PUBLIC KEY-----
+gitconfig: |
+  [user]
+    [...]

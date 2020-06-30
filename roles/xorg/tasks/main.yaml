@@ -1,0 +1,7 @@
+- name: Install Xorg
+  pacman:
+    name:
+      - xorg-server
+      - xorg-xinit
+    extra_args: --noconfirm --needed
+  become: True

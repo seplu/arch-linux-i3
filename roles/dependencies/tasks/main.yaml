@@ -1,0 +1,8 @@
+---
+- include: pacman-conf.yaml
+
+- name: Install base dependencies
+  pacman:
+    name: "{{ deps_base }}"
+    extra_args: --noconfirm --needed
+  become: True

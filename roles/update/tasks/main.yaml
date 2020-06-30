@@ -5,6 +5,6 @@
   become: True
 
 - name: Update packages
-  shell: "pacman -Syu"
+  shell: "pacman -Syu --noconfirm"
   when: updates.stdout|int > 0
   become: True

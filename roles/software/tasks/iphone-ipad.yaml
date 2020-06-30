@@ -1,0 +1,48 @@
+- block:
+  - name: Install iphone-ipad software
+    pacman:
+      name: "{{ software_iphone_ipad }}"
+      extra_args: --noconfirm --needed
+    become: True
+
+  - name: Gert user uid
+    shell: "id -u {{ username }}"
+    register: user_uid
+
+  - name: Create udev rules
+    blockinfile:
+      path: "/etc/udev/rules.d/apple.rules"
+      marker: "# {mark} ANSIBLE MANAGED BLOCK"
+      create: yes
+      block: |
+        SUBSYSTEM=="usb", ACTION="add", ENV{DEVTYPE}=="usb_device", ATTRS{idVendor}=="05ac", RUN+="/home/{{ username }}/.scripts/miad notify"
+    become: True
+
+  - name: Create scripts for Apple devices
+    template:
+      src: miad.j2
+      dest: ~/.scripts/miad
+      mode: 0755
+      owner: "{{ username }}"
+      group: "{{ username }}"
+    become: True
+    become_user: "{{ username }}"
+
+  - name: Reload udev rules
+    shell: udevadm control --reload
+    become: True
+
+  - name: Create directory for Apple devices
+    file:
+      path: "~/Documents/{{ item }}"
+      state: directory
+      mode: 0755
+      owner: "{{ username }}"
+      group: "{{ username }}"
+    with_items:
+      - Apple
+      - Apple/RAW
+      - Apple/iDevice
+    become: True
+    become_user: "{{ username }}"
+  when: software_iphone_ipad is defined

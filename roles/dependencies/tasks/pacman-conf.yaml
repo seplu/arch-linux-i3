@@ -1,0 +1,32 @@
+---
+- block:
+  - name: Download pacman mirror list
+    get_url:
+      url: "https://www.archlinux.org/mirrorlist/?country=GB&country=PL&country=US&country=DE&protocol=http&ip_version=4&use_mirror_status=on"
+      dest: "/etc/pacman.d/mirrorlist"
+  
+  - name: Uncomment `#Server` in pacman mirror list
+    replace:
+      dest: "/etc/pacman.d/mirrorlist"
+      regexp: "^#Server"
+      replace: "Server"
+  
+  - name: Add multilib section
+    lineinfile:
+      dest: "/etc/pacman.conf"
+      state: "present"
+      line: "[multilib]"
+      regexp: "^\\[multilib\\]"
+      insertafter: "^#\\[multilib\\]"
+  
+  - name: Add multilib path
+    lineinfile:
+      dest: "/etc/pacman.conf"
+      state: "present"
+      line: "Include = /etc/pacman.d/mirrorlist"
+      regexp: "Include = /etc/pacman.d/mirrorlist"
+      insertafter: "^\\[multilib\\]"
+
+  - name: Update pacman database
+    shell: pacman -Sy
+  become: True

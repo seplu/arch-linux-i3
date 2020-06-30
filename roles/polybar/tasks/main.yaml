@@ -1,0 +1,93 @@
+- name: Check if polybar is installed
+  shell: "polybar -v | head -n 1 | sed 's/[^0-9]*//'"
+  register: polybar_version
+  ignore_errors: True
+
+- name: Get latest version of polybar
+  shell: curl --silent "https://github.com/polybar/polybar/releases/latest" | sed 's/[^0-9]*//' | cut -f1 -d"\""
+  register: github_version
+  ignore_errors: True
+
+- name: Install required fonts
+  pacman:
+    name:
+      - xorg-fonts-misc
+    extra_args: --noconfirm --needed
+  become: True
+
+- block:
+  - name: Download siji font
+    get_url:
+      url: "{{ aur_url }}/siji-git.tar.gz"
+      dest: "/tmp/siji-git.tar.gz"
+  
+  - name: Unpack siji font
+    unarchive:
+      src: /tmp/siji-git.tar.gz
+      dest: /tmp
+      remote_src: yes
+  
+  - name: Install siji font
+    shell: "cd /tmp/siji-git && makepkg -si --noconfirm --needed"
+  
+  - name: Download polybar
+    get_url:
+      url: "{{ aur_url}}/polybar.tar.gz"
+      dest: "/tmp/polybar.tar.gz"
+
+  - name: Unpack polybar
+    unarchive:
+      src: /tmp/polybar.tar.gz
+      dest: /tmp
+      remote_src: yes
+
+  - name: Install polybar
+    shell: "cd /tmp/polybar && makepkg -si --noconfirm --needed"
+
+  - name: Create polybar config directory
+    file:
+      path: "~/.config/polybar"
+      state: directory
+      mode: 0755
+      owner: "{{ username }}"
+      group: "{{ username }}"
+  when:
+    - (polybar_version.stderr | length > 0) or
+      (polybar_version is failed) or
+      (polybar_version.stdout != github_version.stdout)
+  become: True
+  become_user: "{{ username }}"
+
+- name: Copy scripts files
+  copy:
+    src: "{{ item }}"
+    dest: ~/.config/polybar/{{ item }}
+    mode: 0755
+    owner: "{{ username }}"
+    group: "{{ username }}"
+  become: True
+  become_user: "{{ username }}"
+  with_items:
+    - filesystem.sh
+    - launch.sh
+    - ovpn.sh
+
+- block:
+  - name: Register eth interface
+    shell: "ip link | awk -F: '$0 !~ \"lo|vir|wl|^[^0-9]\"{print $2;getline}'"
+    register: polybar_eth_iface
+
+  - name: Register wl interface
+    shell: "ip link | awk -F: '$0 !~ \"lo|vir|enp|^[^0-9]\"{print $2;getline}'"
+    register: polybar_wl_iface
+  ignore_errors: True
+
+- name: Copy config file
+  template:
+    src: config.j2
+    dest: ~/.config/polybar/config
+    mode: 0755
+    owner: "{{ username }}"
+    group: "{{ username }}"
+  become: True
+  become_user: "{{ username }}"

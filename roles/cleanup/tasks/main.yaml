@@ -1,0 +1,6 @@
+- name: Cleanup priviledges
+  blockinfile:
+    path: /etc/sudoers
+    state: absent
+    regexp: "^%wheel ALL=(ALL) NOPASSWD: ALL"
+  become: True

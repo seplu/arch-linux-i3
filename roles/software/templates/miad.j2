@@ -1,0 +1,79 @@
+#!/bin/bash
+
+echo "==============================="
+echo "Media import from Apple Devices"
+echo "==============================="
+
+DIR=/home/{{ username }}/Apple
+DEST=/home/{{ username }}/Documents/Apple
+
+function prepare {
+    if [ ! -d ${DIR} ]
+    then
+        mkdir ${DIR}
+    fi
+}
+
+function import {
+    ifuse ${DIR}
+    cd ${DIR}/DCIM/
+    echo "Calculating media..."
+    DEV_COUNT=$(find . -type f -follow | wc -l)
+    COUNT=0
+    echo "Files on device: ${DEV_COUNT}"
+    echo "Importing files:"
+    tar cg ${DEST}/Apple.gnu . | pv -r | tar xC ${DEST}/RAW > ${DEST}/Apple.gnu.log
+    for file in $(find $DEST/RAW -type f -follow)
+    do
+        FILENAME=$(date -r ${file} "+%Y-%m-%d_%H_%M_%S")
+        EXT=$(echo ${file##*.})
+        SHASUM=$(sha256sum ${file} | awk '{print $1}')
+        OUTPUT=$(echo ${FILENAME}_${SHASUM}.${EXT})
+
+        mv -n ${file} ${DEST}/iDevice/${OUTPUT}
+        
+        if [ -f "${file}" ]; then
+            echo " - File ${file} not moved"
+            if [ -f "${DEST}/iDevice/${OUTPUT}" ]; then
+                echo " - - but ${OUTPUT} file exists..."
+            fi
+        fi
+
+        echo -ne "${COUNT}/${DEV_COUNT}\033[0K\r"
+        ((COUNT++))
+    done
+    echo -e "Import complete.\nCopied ${COUNT} element(s). On device: ${DEV_COUNT}"
+    notify-send "Copied ${COUNT} element(s). On device: ${DEV_COUNT}"
+}
+
+function cleanup {
+    cd /
+    echo "Cleanup..."
+    umount $DIR
+    if [ "$(ls -A $DIR)" ];then
+        echo -e "Umount failed! \nExiting..."
+        exit 1
+    else
+        rm $DIR
+    fi
+    echo "Done."
+    notify-send "Apple device disconnected"
+}
+
+for arg in "$@"
+do
+    if [ "$arg" == "notify" ]
+    then
+        sudo -u {{ username }} DISPLAY=:0 DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1000/bus /usr/bin/notify-send "Apple device connected"
+    elif [ "$arg" == "start" ]
+    then
+        prepare
+        import
+    elif [ "$arg" == "stop" ]
+        cleanup
+    elif [ "$arg" == "full" ]
+        prepare
+        import
+        cleanup
+    fi
+done

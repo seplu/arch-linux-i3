@@ -1,0 +1,21 @@
+- block:
+  - name: Remove virtualbox-guest-utils-nox
+    pacman:
+      name: virtualbox-guest-utils-nox
+      state: absent
+
+  - name: Install virtualization software
+    pacman:
+      name: "{{ software_virtualization }}"
+
+  - name: Load virtualbox modules
+    blockinfile:
+      path: "/etc/modules-load.d/virtualbox.conf"
+      marker: "# {mark} ANSIBLE MANAGED BLOCK"
+      create: yes
+      block: |
+        vboxguest
+        vboxsf
+        vboxvideo
+  when: software_virtualization is defined
+  become: True
