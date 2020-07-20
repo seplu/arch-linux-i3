@@ -39,6 +39,11 @@ chmod a+x arch-linux-i3.sh
 ./arch-linux-i3.sh
 ```
 
+## Default values
+
+Username: arch  
+Password: Passw0rd
+
 ## How to test
 
 Use `vagrant up` to create VM.  
