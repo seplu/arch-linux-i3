@@ -1,5 +1,7 @@
 # Arch Linux with i3wm
 
+![GitHub license](https://img.shields.io/github/license/seplu/arch-linux-i3)
+
 This set of ansible scripts deploy i3 window manager and other software on top of Arch Linux.
 
 ![arch-linux-i3-desktop](arch-linux-i3-desktop.png)
