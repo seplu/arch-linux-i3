@@ -60,6 +60,7 @@
       dest: "~/.zshrc"
       owner: "{{ username }}"
       group: "{{ username }}"
+      remote_src: yes
     when: cloning is success
   
   - name: Update zshrc
