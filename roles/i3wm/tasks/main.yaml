@@ -27,6 +27,19 @@
     when: '"Intel" in lspci_vga.stdout' 
   become: True
 
+- name: Check hostname
+  shell: hostname
+  register: ansible_hostname
+  ignore_errors: True
+  when: ansible_hostname is not defined
+
+- name: Set default hostname
+  set_fact:
+    ansible_hostname: arch
+  when:
+    - ( ansible_hostname is not defined ) or
+      ( ansible_hostname | length < 1 )
+
 - block:
   - name: Exec i3
     blockinfile:
