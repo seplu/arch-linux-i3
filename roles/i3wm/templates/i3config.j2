@@ -37,10 +37,10 @@ set $ws1 "1: {{ ansible_hostname }}"
 set $ws2 "2: Code"
 set $ws3 "3: Internet"
 set $ws4 "4: Storage"
-set $ws5 "5: Media"
+set $ws5 "5: Mail"
 set $ws6 "6: Chat"
-set $ws7 "7: Work"
-set $ws8 "8: Work-Chat"
+set $ws7 "7: Media"
+set $ws8 "8: Status"
 set $ws9 "9: Other"
 
 # Start a Terminal
@@ -118,20 +118,18 @@ bindsym $mod+Shift+9 move container to workspace $ws9
 bindsym $mod+F2 workspace $ws2; exec code
 bindsym $mod+F3 workspace $ws3; exec opera
 bindsym $mod+F4 workspace $ws4; exec nemo
-bindsym $mod+F5 workspace $ws5; exec vlc
+bindsym $mod+F5 workspace $ws5; exec thunderbird
 bindsym $mod+F6 workspace $ws6; exec discord
-bindsym $mod+F7 workspace $ws7; exec firefox
-bindsym $mod+F8 workspace $ws8; exec slack
+bindsym $mod+F7 workspace $ws7; exec vlc
 
 # Assign program to workspace
 assign [class="urxvt"] $ws1
 assign [class="code"] $ws2
 assign [class="opera"] $ws3
 assign [class="Nemo"] $ws4
-assign [class="vlc"] $ws5
+assign [class="thunderbird"] $ws5
 assign [class="discord"] $ws6
-assign [class="firefox"] $ws7
-assign [class="Slack"] $ws8
+assign [class="vlc"] $ws7
 assign [class="virtualbox"] $ws9
 
 # Volume control
