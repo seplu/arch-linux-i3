@@ -29,9 +29,14 @@
 
 - name: Check hostname
   shell: hostname
-  register: ansible_hostname
+  register: hostname
   ignore_errors: True
-  when: ansible_hostname is not defined
+
+- name: set ansible hostname
+  set_fact:
+    ansible_hostname: "{{ hostname.stdout }}"
+  when: hostname.stdout | length > 1
+  ignore_errors: True
 
 - name: Set default hostname
   set_fact:
