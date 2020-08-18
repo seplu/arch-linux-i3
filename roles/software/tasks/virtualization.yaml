@@ -19,3 +19,17 @@
         vboxvideo
   when: software_virtualization is defined
   become: True
+
+- block:
+  - name: Check if Docker is installed
+    shell: pacman -Qi docker
+    register: docker_status
+    ignore_errors: True
+
+  - name: Enable Docker
+    shell: systemctl enable docker && systemctl start docker
+    when: docker_status is success
+
+  - name: Add user to Docker group
+    shell: usermod -aG docker {{ username }}
+  become: True

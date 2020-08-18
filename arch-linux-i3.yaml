@@ -35,7 +35,7 @@
     software_programming: ['code','nodejs','npm']
     software_social_media: ['discord']
     software_system: ['dosfstools','dunst','exfat-utils','libnotify','notification-daemon','pv','usbutils','vnstat','xfsprogs']
-    software_virtualization: ['mesa','vagrant','virtualbox','virtualbox-host-modules-arch','wine','xf86-video-vesa','xorg']
+    software_virtualization: ['docker','mesa','vagrant','virtualbox','virtualbox-host-modules-arch','wine','xf86-video-vesa','xorg']
 
   roles:
     - { role: dependencies, tags: [ 'dependencies' ]}
