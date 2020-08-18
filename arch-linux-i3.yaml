@@ -25,7 +25,7 @@
       ignore_errors: True
 
   vars:
-    aur_packages: ['buku-git','ifuse','networkmanager-dmenu-git','qimgv-git','qnapi','pavolume-git','realvnc-vnc-viewer','winbox']
+    aur_packages: ['buku-git','google-chrome','ifuse','networkmanager-dmenu-git','qimgv-git','qnapi','pavolume-git','realvnc-vnc-viewer','winbox']
     aur_url: "https://aur.archlinux.org/cgit/aur.git/snapshot"
     deps_base: ['base-devel','cronie','gcc','git','htop','mc','neofetch','openssh','tree','wget','vim','zsh']
     deps_i3: ['alsa-utils','arc-gtk-theme','breeze-icons','dmenu','dunst','feh','libva-intel-driver','light','nemo','network-manager-applet','networkmanager-openvpn','perl','pulseaudio','pulseaudio-alsa','rxvt-unicode','ttf-dejavu','ttf-hack','unclutter','upower','xclip','xcompmgr','xf86-video-intel']
