@@ -11,6 +11,8 @@
       raw: sudo rm -rf /etc/pacman.d/gnupg
     - name: "Pacman Key Init"
       raw: sudo pacman-key --init && sudo pacman-key --populate archlinux
+    - name: "Update pacman"
+      raw: sudo pacman -Syu --noconfirm
     - name: "Install Python3"
       raw: sudo pacman -S python3 --noconfirm --needed
 
@@ -25,13 +27,13 @@
       ignore_errors: True
 
   vars:
-    aur_packages: ['buku-git','google-chrome','ifuse','networkmanager-dmenu-git','qimgv-git','qnapi','pavolume-git','remmina','winbox']
+    aur_packages: ['buku-git','google-chrome','ifuse','networkmanager-dmenu-git','qimgv-git','qnapi','pavolume-git','scrcpy','winbox']
     aur_url: "https://aur.archlinux.org/cgit/aur.git/snapshot"
     deps_base: ['base-devel','cronie','gcc','git','htop','mc','neofetch','openssh','tree','wget','vim','zsh']
     deps_i3: ['alsa-utils','arc-gtk-theme','breeze-icons','dmenu','dunst','feh','libva-intel-driver','light','nemo','network-manager-applet','networkmanager-openvpn','perl','pulseaudio','pulseaudio-alsa','rxvt-unicode','ttf-dejavu','ttf-hack','unclutter','upower','xclip','xcompmgr','xf86-video-intel']
     software_internet: ['opera','thunderbird','youtube-dl']
     software_iphone_ipad: ['libimobiledevice']
-    software_productivity: ['barrier','calc','dbeaver','nemo-fileroller','rsync','scrcpy','task','texlive-most']
+    software_productivity: ['barrier','calc','dbeaver','nemo-fileroller','remmina','rsync','task','texlive-most']
     software_programming: ['code','nodejs','npm']
     software_social_media: ['discord']
     software_system: ['dosfstools','dunst','exfat-utils','libnotify','notification-daemon','pv','usbutils','vnstat','xfsprogs']
